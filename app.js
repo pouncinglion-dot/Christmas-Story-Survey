@@ -1,0 +1,206 @@
+// ----------------------------------------------------------------------------
+// Set this to your deployed Google Apps Script Web App URL (see README.md).
+// ----------------------------------------------------------------------------
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykKouEY3W5JJwrjUVv7p-PHNJw_YGb6PUGw8qYLS_U7fcCVyegFI8eXaG2JIUW2uiFcg/exec";
+
+const NUM_RANDOM_QUESTIONS = 4;
+
+function shuffle(array) {
+  const a = array.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pickQuestionsForThisVisit() {
+  const randomPicks = shuffle(QUESTION_BANK).slice(0, NUM_RANDOM_QUESTIONS);
+  return [STATIC_QUESTION, ...randomPicks];
+}
+
+function normalize(str) {
+  return String(str || "").trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+function renderQuestion(q, index) {
+  const card = document.createElement("div");
+  card.className = "question-card";
+  card.dataset.qid = q.id;
+  card.dataset.qtype = q.type;
+
+  const label = document.createElement("p");
+  label.className = "q-text";
+  label.textContent = `${index + 1}. ${q.question}`;
+  card.appendChild(label);
+
+  if (q.type === "short-text") {
+    const input = document.createElement("input");
+    input.type = "text";
+    input.name = q.id;
+    input.autocomplete = "off";
+    card.appendChild(input);
+  } else if (q.type === "scale" || q.type === "multiple-choice") {
+    q.options.forEach((opt) => {
+      card.appendChild(makeRadioRow(q.id, opt));
+    });
+  } else if (q.type === "true-false") {
+    ["True", "False"].forEach((opt) => {
+      card.appendChild(makeRadioRow(q.id, opt));
+    });
+  } else if (q.type === "checkbox") {
+    q.options.forEach((opt) => {
+      card.appendChild(makeCheckboxRow(q.id, opt));
+    });
+  }
+
+  const err = document.createElement("div");
+  err.className = "field-error";
+  err.textContent = "Please answer this question.";
+  card.appendChild(err);
+
+  return card;
+}
+
+function makeRadioRow(name, value) {
+  const row = document.createElement("label");
+  row.className = "option-row";
+  const input = document.createElement("input");
+  input.type = "radio";
+  input.name = name;
+  input.value = value;
+  row.appendChild(input);
+  row.appendChild(document.createTextNode(value));
+  return row;
+}
+
+function makeCheckboxRow(name, value) {
+  const row = document.createElement("label");
+  row.className = "option-row";
+  const input = document.createElement("input");
+  input.type = "checkbox";
+  input.name = name;
+  input.value = value;
+  row.appendChild(input);
+  row.appendChild(document.createTextNode(value));
+  return row;
+}
+
+function getAnswerForQuestion(q) {
+  if (q.type === "short-text") {
+    const input = document.querySelector(`input[name="${q.id}"]`);
+    const val = input.value.trim();
+    return val === "" ? null : val;
+  }
+  if (q.type === "checkbox") {
+    const checked = document.querySelectorAll(`input[name="${q.id}"]:checked`);
+    return checked.length === 0 ? null : Array.from(checked).map((c) => c.value);
+  }
+  // scale, multiple-choice, true-false
+  const checked = document.querySelector(`input[name="${q.id}"]:checked`);
+  return checked ? checked.value : null;
+}
+
+function gradeAnswer(q, userAnswer) {
+  if (q.type === "scale") {
+    return { correctAnswer: "", isCorrect: "" };
+  }
+  if (q.type === "short-text") {
+    const normalizedAnswer = normalize(userAnswer);
+    const isCorrect = q.acceptedAnswers.some((a) => normalize(a) === normalizedAnswer);
+    return { correctAnswer: q.acceptedAnswers[0], isCorrect };
+  }
+  if (q.type === "checkbox") {
+    const selected = (userAnswer || []).slice().sort();
+    const correct = q.correctAnswers.slice().sort();
+    const isCorrect = selected.length === correct.length && selected.every((v, i) => v === correct[i]);
+    return { correctAnswer: q.correctAnswers.join("; "), isCorrect };
+  }
+  // multiple-choice, true-false
+  return { correctAnswer: q.correctAnswer, isCorrect: userAnswer === q.correctAnswer };
+}
+
+function uuid() {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const questions = pickQuestionsForThisVisit();
+  const container = document.getElementById("questions");
+  questions.forEach((q, i) => container.appendChild(renderQuestion(q, i)));
+
+  const form = document.getElementById("quiz-form");
+  const submitBtn = document.getElementById("submit-btn");
+  const errorBanner = document.getElementById("error-banner");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    errorBanner.hidden = true;
+
+    // Validate every question has an answer.
+    let firstInvalidCard = null;
+    document.querySelectorAll(".question-card").forEach((card) => {
+      const err = card.querySelector(".field-error");
+      err.style.display = "none";
+    });
+
+    const answers = questions.map((q) => {
+      const userAnswer = getAnswerForQuestion(q);
+      return { q, userAnswer };
+    });
+
+    answers.forEach(({ q, userAnswer }) => {
+      const isEmpty = userAnswer === null || (Array.isArray(userAnswer) && userAnswer.length === 0);
+      if (isEmpty) {
+        const card = document.querySelector(`.question-card[data-qid="${q.id}"]`);
+        card.querySelector(".field-error").style.display = "block";
+        if (!firstInvalidCard) firstInvalidCard = card;
+      }
+    });
+
+    if (firstInvalidCard) {
+      firstInvalidCard.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+
+    const entries = answers.map(({ q, userAnswer }) => {
+      const { correctAnswer, isCorrect } = gradeAnswer(q, userAnswer);
+      return {
+        questionId: q.id,
+        questionType: q.type,
+        questionText: q.question,
+        userAnswer: Array.isArray(userAnswer) ? userAnswer.join("; ") : userAnswer,
+        correctAnswer,
+        isCorrect
+      };
+    });
+
+    const payload = {
+      submissionId: uuid(),
+      entries
+    };
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting…";
+
+    try {
+      const response = await fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+      if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+
+      form.hidden = true;
+      document.getElementById("thank-you").hidden = false;
+    } catch (err) {
+      errorBanner.hidden = false;
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Submit";
+    }
+  });
+});
