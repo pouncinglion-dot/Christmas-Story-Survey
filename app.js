@@ -5,6 +5,26 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykKouEY3W5JJwr
 
 const NUM_RANDOM_QUESTIONS = 4;
 
+// URL query params to capture and record with each submission, e.g.
+// https://your-site/?Group=TeamA&Date=2025-12-24&City-Country=Nashville-USA
+const URL_PARAM_NAMES = ["Group", "Date", "City-Country"];
+
+function getUrlParams() {
+  const search = new URLSearchParams(window.location.search);
+  const result = {};
+  URL_PARAM_NAMES.forEach((name) => {
+    let value = "";
+    for (const [key, val] of search.entries()) {
+      if (key.toLowerCase() === name.toLowerCase()) {
+        value = val;
+        break;
+      }
+    }
+    result[name] = value;
+  });
+  return result;
+}
+
 function shuffle(array) {
   const a = array.slice();
   for (let i = a.length - 1; i > 0; i--) {
@@ -181,6 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const payload = {
       submissionId: uuid(),
+      urlParams: getUrlParams(),
       entries
     };
 
