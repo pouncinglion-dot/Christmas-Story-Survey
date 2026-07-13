@@ -34,9 +34,15 @@ function shuffle(array) {
   return a;
 }
 
+function shuffleQuestionOptions(q) {
+  if (!q.options) return q;
+  return { ...q, options: shuffle(q.options) };
+}
+
 function pickQuestionsForThisVisit() {
   const randomPicks = shuffle(QUESTION_BANK).slice(0, NUM_RANDOM_QUESTIONS);
-  return [STATIC_QUESTION, ...randomPicks];
+  const selected = [STATIC_QUESTION, ...randomPicks];
+  return selected.map(shuffleQuestionOptions);
 }
 
 function normalize(str) {
