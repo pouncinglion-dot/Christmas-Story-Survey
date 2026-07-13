@@ -144,6 +144,44 @@ input[type="text"] {
   margin: 0 0 20px;
 }
 
+.result-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.result-label-row .q-text {
+  margin: 0;
+}
+
+.status-badge {
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.status-badge.badge-correct {
+  background: rgba(26, 92, 58, 0.12);
+  color: var(--green);
+}
+
+.status-badge.badge-wrong {
+  background: rgba(179, 38, 42, 0.12);
+  color: var(--red);
+}
+
+.checkbox-note {
+  margin: 10px 0 0;
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--muted);
+}
+
 .result-chip-row {
   display: flex;
   flex-wrap: wrap;

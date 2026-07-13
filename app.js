@@ -171,10 +171,20 @@ function renderResultQuestion(record, index) {
   const card = document.createElement("div");
   card.className = "question-card result-card";
 
+  const labelRow = document.createElement("div");
+  labelRow.className = "result-label-row";
+
   const label = document.createElement("p");
   label.className = "q-text";
   label.textContent = `${index + 1}. ${q.question}`;
-  card.appendChild(label);
+  labelRow.appendChild(label);
+
+  const badge = document.createElement("span");
+  badge.className = "status-badge " + (isCorrect ? "badge-correct" : "badge-wrong");
+  badge.textContent = isCorrect ? "✅ Correct" : "❌ Incorrect";
+  labelRow.appendChild(badge);
+
+  card.appendChild(labelRow);
 
   const row = document.createElement("div");
   row.className = "result-chip-row";
@@ -197,6 +207,14 @@ function renderResultQuestion(record, index) {
   }
 
   card.appendChild(row);
+
+  if (q.type === "checkbox" && !isCorrect) {
+    const note = document.createElement("p");
+    note.className = "checkbox-note";
+    note.textContent = `You needed to select all of: ${q.correctAnswers.join(", ")}`;
+    card.appendChild(note);
+  }
+
   return card;
 }
 
