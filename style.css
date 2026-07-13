@@ -133,14 +133,70 @@ input[type="text"] {
 }
 
 .thank-you {
-  text-align: center;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 40px 20px;
+  background: transparent;
+  border: none;
+  padding: 0;
 }
 
 .thank-you h2 {
   color: var(--green);
-  margin-top: 0;
+  text-align: center;
+  margin: 0 0 20px;
+}
+
+.result-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.result-chip {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 2px solid var(--border);
+  background: var(--bg);
+  font-size: 0.95rem;
+}
+
+.result-chip.chip-correct {
+  border-color: var(--green);
+  background: rgba(26, 92, 58, 0.1);
+  color: var(--green);
+  font-weight: 700;
+}
+
+.result-chip.chip-wrong {
+  border-color: var(--red);
+  background: rgba(179, 38, 42, 0.1);
+  color: var(--red);
+  font-weight: 700;
+}
+
+.result-chip.chip-correct-unselected {
+  border-color: var(--green);
+  color: var(--green);
+  font-weight: 600;
+}
+
+.score-card {
+  text-align: center;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 32px 20px;
+  margin-top: 24px;
+}
+
+.score-number {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: var(--green);
+  margin: 0 0 8px;
+}
+
+.score-message {
+  color: var(--text);
+  margin: 0;
+  font-size: 1.05rem;
 }

@@ -148,6 +148,88 @@ function uuid() {
   });
 }
 
+function scoreMessage(correct, total) {
+  const pct = correct / total;
+  if (pct === 1) return "Perfect score! You really know the Christmas story! 🌟";
+  if (pct >= 0.75) return "Great job — you know your Nativity well! 🎉";
+  if (pct >= 0.5) return "Nice work! A solid showing. 🎄";
+  return "Thanks for playing! Maybe give Luke & Matthew another read. 📖";
+}
+
+function makeResultChip(text, { isSelected, isCorrectOption }) {
+  const chip = document.createElement("span");
+  chip.className = "result-chip";
+  if (isSelected && isCorrectOption) chip.classList.add("chip-correct");
+  else if (isSelected && !isCorrectOption) chip.classList.add("chip-wrong");
+  else if (!isSelected && isCorrectOption) chip.classList.add("chip-correct-unselected");
+  chip.textContent = text;
+  return chip;
+}
+
+function renderResultQuestion(record, index) {
+  const { q, userAnswer, correctAnswer, isCorrect } = record;
+  const card = document.createElement("div");
+  card.className = "question-card result-card";
+
+  const label = document.createElement("p");
+  label.className = "q-text";
+  label.textContent = `${index + 1}. ${q.question}`;
+  card.appendChild(label);
+
+  const row = document.createElement("div");
+  row.className = "result-chip-row";
+
+  if (q.type === "short-text") {
+    row.appendChild(makeResultChip(`Your answer: ${userAnswer}`, { isSelected: true, isCorrectOption: isCorrect }));
+    if (!isCorrect) {
+      row.appendChild(makeResultChip(`Correct answer: ${correctAnswer}`, { isSelected: false, isCorrectOption: true }));
+    }
+  } else {
+    const options = q.type === "true-false" ? ["True", "False"] : q.options;
+    const correctSet = q.type === "checkbox" ? q.correctAnswers : [q.correctAnswer];
+    const selectedSet = Array.isArray(userAnswer) ? userAnswer : [userAnswer];
+    options.forEach((opt) => {
+      row.appendChild(makeResultChip(opt, {
+        isSelected: selectedSet.includes(opt),
+        isCorrectOption: correctSet.includes(opt)
+      }));
+    });
+  }
+
+  card.appendChild(row);
+  return card;
+}
+
+function renderResults(records) {
+  const bankRecords = records.slice(1); // exclude the static question
+  const correctCount = bankRecords.filter((r) => r.isCorrect === true).length;
+  const total = bankRecords.length;
+
+  const container = document.getElementById("thank-you");
+  container.innerHTML = "";
+
+  const heading = document.createElement("h2");
+  heading.textContent = "🎁 Here's how you did!";
+  container.appendChild(heading);
+
+  bankRecords.forEach((record, i) => container.appendChild(renderResultQuestion(record, i)));
+
+  const scoreCard = document.createElement("div");
+  scoreCard.className = "score-card";
+
+  const scoreNumber = document.createElement("p");
+  scoreNumber.className = "score-number";
+  scoreNumber.textContent = `${correctCount} / ${total}`;
+  scoreCard.appendChild(scoreNumber);
+
+  const scoreMsg = document.createElement("p");
+  scoreMsg.className = "score-message";
+  scoreMsg.textContent = scoreMessage(correctCount, total);
+  scoreCard.appendChild(scoreMsg);
+
+  container.appendChild(scoreCard);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const questions = pickQuestionsForThisVisit();
   const container = document.getElementById("questions");
@@ -187,17 +269,19 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const entries = answers.map(({ q, userAnswer }) => {
+    const gradedRecords = answers.map(({ q, userAnswer }) => {
       const { correctAnswer, isCorrect } = gradeAnswer(q, userAnswer);
-      return {
-        questionId: q.id,
-        questionType: q.type,
-        questionText: q.question,
-        userAnswer: Array.isArray(userAnswer) ? userAnswer.join("; ") : userAnswer,
-        correctAnswer,
-        isCorrect
-      };
+      return { q, userAnswer, correctAnswer, isCorrect };
     });
+
+    const entries = gradedRecords.map(({ q, userAnswer, correctAnswer, isCorrect }) => ({
+      questionId: q.id,
+      questionType: q.type,
+      questionText: q.question,
+      userAnswer: Array.isArray(userAnswer) ? userAnswer.join("; ") : userAnswer,
+      correctAnswer,
+      isCorrect
+    }));
 
     const payload = {
       submissionId: uuid(),
@@ -216,6 +300,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       if (!response.ok) throw new Error(`Request failed: ${response.status}`);
 
+      renderResults(gradedRecords);
       form.hidden = true;
       document.getElementById("thank-you").hidden = false;
     } catch (err) {
