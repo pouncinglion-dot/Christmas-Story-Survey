@@ -35,7 +35,7 @@ function shuffle(array) {
 }
 
 function shuffleQuestionOptions(q) {
-  if (!q.options) return q;
+  if (!q.options || q.type === "scale") return q;
   return { ...q, options: shuffle(q.options) };
 }
 
