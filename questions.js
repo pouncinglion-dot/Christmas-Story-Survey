@@ -31,7 +31,8 @@ const QUESTION_BANK = [
       "Luke 1 & 2", "Lk 1 & 2", "Lk. 1 & 2",
       "Matthew 2 and Luke 1-2", "Matt 2 and Lk 1-2",
       "Matthew 1:18-2:23", "Matt 1:18-2:23", "Matt. 1:18-2:23",
-      "Luke 1:1-2:40"
+      "Luke 1:1-2:40",
+      "Matthew", "Matt", "Luke"
     ]
   },
   {
