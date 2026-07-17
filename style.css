@@ -182,6 +182,12 @@ input[type="text"] {
   color: var(--muted);
 }
 
+.reference-line {
+  margin: 10px 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
 .result-chip-row {
   display: flex;
   flex-wrap: wrap;

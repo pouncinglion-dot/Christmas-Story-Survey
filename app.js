@@ -49,6 +49,15 @@ function normalize(str) {
   return String(str || "").trim().toLowerCase().replace(/\s+/g, " ");
 }
 
+function setQuestionLabelContent(label, q, index) {
+  const prefix = `${index + 1}. `;
+  if (q.questionHtml) {
+    label.innerHTML = prefix + q.questionHtml;
+  } else {
+    label.textContent = prefix + q.question;
+  }
+}
+
 function renderQuestion(q, index) {
   const card = document.createElement("div");
   card.className = "question-card";
@@ -57,7 +66,7 @@ function renderQuestion(q, index) {
 
   const label = document.createElement("p");
   label.className = "q-text";
-  label.textContent = `${index + 1}. ${q.question}`;
+  setQuestionLabelContent(label, q, index);
   card.appendChild(label);
 
   if (q.type === "short-text") {
@@ -182,7 +191,7 @@ function renderResultQuestion(record, index) {
 
   const label = document.createElement("p");
   label.className = "q-text";
-  label.textContent = `${index + 1}. ${q.question}`;
+  setQuestionLabelContent(label, q, index);
   labelRow.appendChild(label);
 
   const badge = document.createElement("span");
@@ -219,6 +228,13 @@ function renderResultQuestion(record, index) {
     note.className = "checkbox-note";
     note.textContent = `You needed to select all of: ${q.correctAnswers.join(", ")}`;
     card.appendChild(note);
+  }
+
+  if (q.reference) {
+    const refLine = document.createElement("p");
+    refLine.className = "reference-line";
+    refLine.textContent = `Correct Answer Reference: ${q.reference}`;
+    card.appendChild(refLine);
   }
 
   return card;
