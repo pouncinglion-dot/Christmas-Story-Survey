@@ -255,6 +255,12 @@ input[type="text"] {
   color: var(--muted);
 }
 
+.results-footer .thanks-line {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--green);
+}
+
 .results-footer .copyright-line {
   font-size: 0.8rem;
 }

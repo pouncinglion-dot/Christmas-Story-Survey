@@ -273,6 +273,7 @@ function renderResults(records) {
   footer.className = "results-footer";
 
   const thanksLine = document.createElement("p");
+  thanksLine.className = "thanks-line";
   thanksLine.textContent = "Thanks for your response. Refresh to take another quiz.";
   footer.appendChild(thanksLine);
 
