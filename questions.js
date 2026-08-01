@@ -346,5 +346,52 @@ const QUESTION_BANK = [
     options: ["Bethlehem", "Jerusalem", "Tel Aviv", "Nazareth", "Hebron"],
     correctAnswer: "Nazareth",
     reference: "Matthew 2:23; Luke 2:39"
+  },
+  {
+    id: "q39",
+    type: "multiple-choice",
+    question: "(Select one) Israel was a client kingdom of what world power during the Christmas Story?",
+    options: ["Persia", "Greece", "Parthia", "Babylon", "Rome"],
+    correctAnswer: "Rome",
+    reference: "Luke 2:1"
+  },
+  {
+    id: "q40",
+    type: "multiple-choice",
+    question: "(Select one) Which Caesar reigned at the time of the Christmas Story?",
+    options: ["Quirinius", "Nero", "Augustus", "Tiberius", "Claudius"],
+    correctAnswer: "Claudius",
+    reference: "Luke 2:1"
+  },
+  {
+    id: "q41",
+    type: "multiple-choice",
+    question: "(Select one) At the time Jesus was born, Mary and Joseph were ...",
+    options: ["Married", "Dating", "Engaged", "Neighbors", "Friends"],
+    correctAnswer: "Engaged",
+    reference: "Luke 2:5"
+  },
+  {
+    id: "q42",
+    type: "checkbox",
+    question: "(Select all that apply) How many angels did the shepherds see and hear out in the fields?",
+    questionHtml: "(Select <em>all </em>that apply) How many angels did the shepherds see and hear out in the fields?",
+    options: [
+      "One",
+      "A hundred",
+      "A thousand",
+      "A multitude",
+      "Scripture doesn't say"
+    ],
+    correctAnswers: ["One", "A multitude"],
+    reference: "Luke 2:10, 13"
+  },
+  {
+    id: "q43",
+    type: "multiple-choice",
+    question: "(Select one) After their encounter with angels out in the fields, the shepherds ...",
+    options: ["Sought out the local rabbi", "Went straight into Bethlehem", "Reported to the chief shepherd", "Went to sleep", "Fled the area"],
+    correctAnswer: "Went straight into Bethlehem",
+    reference: ""
   }
 ];

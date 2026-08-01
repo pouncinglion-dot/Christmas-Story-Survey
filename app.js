@@ -268,6 +268,20 @@ function renderResults(records) {
   scoreCard.appendChild(scoreMsg);
 
   container.appendChild(scoreCard);
+
+  const footer = document.createElement("div");
+  footer.className = "results-footer";
+
+  const thanksLine = document.createElement("p");
+  thanksLine.textContent = "Thanks for your response. Refresh to take another quiz.";
+  footer.appendChild(thanksLine);
+
+  const copyrightLine = document.createElement("p");
+  copyrightLine.className = "copyright-line";
+  copyrightLine.textContent = "© 2026 Brian A. Edwards. All rights reserved.";
+  footer.appendChild(copyrightLine);
+
+  container.appendChild(footer);
 }
 
 document.addEventListener("DOMContentLoaded", () => {

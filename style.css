@@ -244,3 +244,17 @@ input[type="text"] {
   margin: 0;
   font-size: 1.05rem;
 }
+
+.results-footer {
+  text-align: center;
+  margin-top: 24px;
+}
+
+.results-footer p {
+  margin: 0 0 6px;
+  color: var(--muted);
+}
+
+.results-footer .copyright-line {
+  font-size: 0.8rem;
+}
