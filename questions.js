@@ -360,7 +360,7 @@ const QUESTION_BANK = [
     type: "multiple-choice",
     question: "(Select one) Which Caesar reigned at the time of the Christmas Story?",
     options: ["Quirinius", "Nero", "Augustus", "Tiberius", "Claudius"],
-    correctAnswer: "Claudius",
+    correctAnswer: "Augustus",
     reference: "Luke 2:1"
   },
   {
