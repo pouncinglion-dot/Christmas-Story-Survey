@@ -168,7 +168,7 @@ function scoreMessage(correct, total) {
   if (pct === 1) return "Perfect score! You really know the Christmas story! 🌟";
   if (pct >= 0.75) return "Great job — you know your Nativity well! 🎉";
   if (pct >= 0.5) return "Nice work! A solid showing. 🎄";
-  return "Thanks for playing! Maybe give Luke & Matthew another read. 📖";
+  return "Thanks for your response. Refresh to take another quiz.";
 }
 
 function makeResultChip(text, { isSelected, isCorrectOption }) {
@@ -271,11 +271,6 @@ function renderResults(records) {
 
   const footer = document.createElement("div");
   footer.className = "results-footer";
-
-  const thanksLine = document.createElement("p");
-  thanksLine.className = "thanks-line";
-  thanksLine.textContent = "Thanks for your response. Refresh to take another quiz.";
-  footer.appendChild(thanksLine);
 
   const copyrightLine = document.createElement("p");
   copyrightLine.className = "copyright-line";
