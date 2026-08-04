@@ -287,11 +287,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const form = document.getElementById("quiz-form");
   const submitBtn = document.getElementById("submit-btn");
-  const errorBanner = document.getElementById("error-banner");
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    errorBanner.hidden = true;
 
     // Validate every question has an answer.
     let firstInvalidCard = null;
@@ -340,23 +338,27 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     submitBtn.disabled = true;
-    submitBtn.textContent = "Submitting…";
 
-    try {
-      const response = await fetch(APPS_SCRIPT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
+    // Results are computed entirely client-side, so show them immediately rather than
+    // waiting on the (often slow) round-trip to the Google Apps Script backend. The save
+    // to the sheet happens in the background; a quiet notice appears only if it fails.
+    renderResults(gradedRecords);
+    form.hidden = true;
+    document.getElementById("thank-you").hidden = false;
+
+    fetch(APPS_SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+      })
+      .catch(() => {
+        const notice = document.createElement("p");
+        notice.className = "save-warning";
+        notice.textContent = "Note: there was a problem saving your response.";
+        document.getElementById("thank-you").appendChild(notice);
       });
-      if (!response.ok) throw new Error(`Request failed: ${response.status}`);
-
-      renderResults(gradedRecords);
-      form.hidden = true;
-      document.getElementById("thank-you").hidden = false;
-    } catch (err) {
-      errorBanner.hidden = false;
-      submitBtn.disabled = false;
-      submitBtn.textContent = "Submit";
-    }
   });
 });

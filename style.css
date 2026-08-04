@@ -116,13 +116,14 @@ input[type="text"] {
   cursor: not-allowed;
 }
 
-.error-banner {
+.save-warning {
   background: #fbeaea;
   border: 1px solid var(--red);
   color: var(--red);
   padding: 12px 14px;
   border-radius: 6px;
-  margin-bottom: 14px;
+  margin-top: 20px;
+  text-align: center;
 }
 
 .field-error {
